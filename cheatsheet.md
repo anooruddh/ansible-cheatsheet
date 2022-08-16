@@ -38,10 +38,10 @@ $ grep module_name /etc/ansible/ansible.cfg
     !While the variable is a string, it will be used as the inventory PATH
 
 ## Ansible verbosity:
-$ ansible-playbook -v -i <HOST> <playbook>.yaml      <-displays output data
-$ ansible-playbook -vv -i <HOST> <playbook>.yaml     <-displays output & input data
-$ ansible-playbook -vvv -i <HOST> <playbook>.yaml    <-information about connections
-$ ansible-playbook -vvvv -i <HOST> <playbook>.yaml   <-information about plugins
+      $ ansible-playbook -v -i <HOST> <playbook>.yaml      <-displays output data
+      $ ansible-playbook -vv -i <HOST> <playbook>.yaml     <-displays output & input data
+      $ ansible-playbook -vvv -i <HOST> <playbook>.yaml    <-information about connections
+      $ ansible-playbook -vvvv -i <HOST> <playbook>.yaml   <-information about plugins
 
 ###############################################################################
 ## Inventory file examples:
@@ -63,81 +63,91 @@ $ ansible-playbook -vvvv -i <HOST> <playbook>.yaml   <-information about plugins
     192.168.3.7 ansible_connection=ssh ansible_user=ftaylor   <-use different settings example
 
   # Dynamic inventory - AWS custom script
-  !Script must support '--list' an '--host' parameters, e.g.:
-  $ ./inventiryscript --list
-    $ sudo cp ec2.py /etc/ansible/
-    $ sudo cp ec2.ini /etc/ansible/
-    $ sudo chmod +x /etc/ansible/ec2.py
-    $ ansible -i ec2.py all -m ping
+                                                                    
+      !Script must support '--list' an '--host' parameters, e.g.:
+      $ ./inventiryscript --list
+        $ sudo cp ec2.py /etc/ansible/
+        $ sudo cp ec2.ini /etc/ansible/
+        $ sudo chmod +x /etc/ansible/ec2.py
+        $ ansible -i ec2.py all -m ping
 
 !Multiple inventory files in one dir = All the files in the directory are merged and treated as one inventory
 
 ###############################################################################
 ## Which hosts will the playbook run against?
-$ ansible-playbook <playbook>.yaml --list-hosts
+                                                                    
+    $ ansible-playbook <playbook>.yaml --list-hosts
 
 ## Which hosts are in the hosts file?
-$ ansible all --list-hosts
-$ ansible '192.168.2.*' -i <myinventory> --list-hosts                     <-everything that matches the wildcard
-$ ansible lab:datacenter1 -i <myinventory> --list-hosts                   <-members of lab OR datacenter1
-$ ansible 'lab:&datacenter1' -i <myinventory> --list-hosts                <-members of lab AND datacenter1
-$ ansible 'datacenter:!test2.example.com' -i <myinventory> --list-hosts   <-exclude host
+    $ ansible all --list-hosts
+    $ ansible '192.168.2.*' -i <myinventory> --list-hosts                     <-everything that matches the wildcard
+    $ ansible lab:datacenter1 -i <myinventory> --list-hosts                   <-members of lab OR datacenter1
+    $ ansible 'lab:&datacenter1' -i <myinventory> --list-hosts                <-members of lab AND datacenter1
+    $ ansible 'datacenter:!test2.example.com' -i <myinventory> --list-hosts   <-exclude host
 
 ## Print all the tasks in short form that playbook would perform:
-$ ansible-playbook <playbook>.yaml --list-tasks
+                                                                                        
+    $ ansible-playbook <playbook>.yaml --list-tasks
 
 ###############################################################################
 ## See the metadata obtained during Ansible setup (module setup):
-$ ansible all -i <HOST>, -m setup
-$ ansible <group> -m setup
-$ ansible <group> -m setup --tree facts
-# Show the specific metadata:
-$ ansible <group> -m setup -a 'filter=*ipv4*'
-  # Examples:
-  {{ ansible_hostname }}
-  {{ ansible_default_ipv4.address }}
-  {{ ansible_devices.vda.partitions.vda1.size }}
-  {{ ansible_dns.nameservers }}
-  {{ ansible_kernel }}
-# To disable facts:
-  gather_facts: no
-# Custom facts are saved under ansible_local:
-  $ cat /etc/ansible/facts.d/new.fact    <-ini or json file
-  $ ansible demo1.example.com -m setup -a 'filter=ansible_local'
-# Accessing facts of another node:
-  {{ hostvars['demo2.example.com']['ansible_os_family'] }}
+    $ ansible all -i <HOST>, -m setup
+    $ ansible <group> -m setup
+    $ ansible <group> -m setup --tree facts
+    # Show the specific metadata:
+    $ ansible <group> -m setup -a 'filter=*ipv4*'
+      # Examples:
+      {{ ansible_hostname }}
+      {{ ansible_default_ipv4.address }}
+      {{ ansible_devices.vda.partitions.vda1.size }}
+      {{ ansible_dns.nameservers }}
+      {{ ansible_kernel }}
+    # To disable facts:
+      gather_facts: no
+    # Custom facts are saved under ansible_local:
+      $ cat /etc/ansible/facts.d/new.fact    <-ini or json file
+      $ ansible demo1.example.com -m setup -a 'filter=ansible_local'
+    # Accessing facts of another node:
+      {{ hostvars['demo2.example.com']['ansible_os_family'] }}
 
 ###############################################################################
 # Run arbitrary command on all hosts as sudo:
-$ ansible all -s -a "cat /var/log/messages"
+                                                   
+    $ ansible all -s -a "cat /var/log/messages"
 
 # Run Ad Hoc module with arguments:
-$ ansible host pattern -m module -a 'argument1 argument2' [-i inventory]
+                                                   
+    $ ansible host pattern -m module -a 'argument1 argument2' [-i inventory]
 
 # Run ad hoc command that generates one line input for each operation:
-$ ansible myhosts -m command -a /usr/bin/hostname -o
+    
+    $ ansible myhosts -m command -a /usr/bin/hostname -o
 
 # Ad hoc Example: yum module checks if httpd installed on demohost:
-$ ansible demohost -u devops -b -m yum -a 'name=httpd state=present'
+                                                   
+    $ ansible demohost -u devops -b -m yum -a 'name=httpd state=present'
 
 # Ad hoc Example: Find available space on disks configured on demohost:
-$ ansible demohost -a "df -h"
+
+    $ ansible demohost -a "df -h"
 
 # Ad hoc Example: Find available free memory on demohost:
-$ ansible demohost -a "free -m"
+                                                   
+    $ ansible demohost -a "free -m"
 
 ###############################################################################
 ## Playbook(s) basics:
----                                       <-indicates YAML, optional document marker
-- hosts: all                              <-host or host group against we will run the task (example - hosts: webserver)
-  remote_user: lmaly                      <-as what user will Ansible log in to the machine(s)
-  tasks:                                  <-list of actions
-  - name: Whatever you want to name it    <-name of the first task
-    yum:                                  
-      name: httpd                         
-      state: present                      <-same as single line 'yum: name=httpd state=present become=True'
-      become: True                        <-task will be executed with sudo
-...                                       <-optional document marker indicating end of YAML
+                                                   
+    ---                                       <-indicates YAML, optional document marker
+    - hosts: all                              <-host or host group against we will run the task (example - hosts: webserver)
+      remote_user: lmaly                      <-as what user will Ansible log in to the machine(s)
+      tasks:                                  <-list of actions
+      - name: Whatever you want to name it    <-name of the first task
+        yum:                                  
+          name: httpd                         
+          state: present                      <-same as single line 'yum: name=httpd state=present become=True'
+          become: True                        <-task will be executed with sudo
+    ...                                       <-optional document marker indicating end of YAML
 
 Notes:
   !Space characters used for indentation
@@ -158,46 +168,57 @@ Notes:
 
 ###############################################################################
 ## Variables:
---- # Usually comment field describing what it does
-- hosts: all
-  remote_user: lmaly
-  tasks:
-  - name: Set variable 'name'
-    set_fact:
-      name: Test machine
-  - name: Print variable 'name'
-    debug:
-      msg: '{{ name }}'
+  
+    --- # Usually comment field describing what it does
+    - hosts: all
+      remote_user: lmaly
+      tasks:
+      - name: Set variable 'name'
+        set_fact:
+          name: Test machine
+      - name: Print variable 'name'
+        debug:
+          msg: '{{ name }}'
 
 a/ In vars block:
- vars:
-   set_fact: 'Test machine'
+  
+   vars:
+     set_fact: 'Test machine'
 
 b/ Passed as arguments:
-  include_vars: vars/extra_args.yml
+  
+    include_vars: vars/extra_args.yml
 
   # Other alternative ways:
+  
     (1) pass variable(s) in the CLI:
-    $ ansible-playbook -i <HOST>, <playbook>.yaml  -e 'name=test01'
+  
+        $ ansible-playbook -i <HOST>, <playbook>.yaml  -e 'name=test01'
 
     (2) pass variable(s) to an inventory file:
+  
       a/
-      [webserver]   <- all playbooks running on webservers will be able to refer to the domain name variable
-      ws01.lmaly.io domainname=example1.lmaly.io
-      ws02.lmaly.io domainname=example2.lmaly.io
+  
+        [webserver]   <- all playbooks running on webservers will be able to refer to the domain name variable
+        ws01.lmaly.io domainname=example1.lmaly.io
+        ws02.lmaly.io domainname=example2.lmaly.io
     
       b/
-      [webserver:vars]    <- ! Host variables will override group variables in case tge same variable is used in both
-      https_enabled=True
+                         
+        [webserver:vars]    <- ! Host variables will override group variables in case tge same variable is used in both
+        https_enabled=True
 
     (3) in variable file(s):
+  
       a/ host_vars:
-      $ cat host_vars/ws01.lmaly.io
-        domainname=example1.lmaly.io
+  
+        $ cat host_vars/ws01.lmaly.io
+          domainname=example1.lmaly.io
     
       b/ group_vars:
-      $ cat group_vars/webserver
-        https_enabled=True
+  
+        $ cat group_vars/webserver
+          https_enabled=True
   
   !Variable must start with letter; valid characters are: letters, numbers, underscores
   # Array definition example:
