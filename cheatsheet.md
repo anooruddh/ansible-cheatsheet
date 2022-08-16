@@ -182,8 +182,8 @@ Notes:
 
 a/ In vars block:
   
-   vars:
-     set_fact: 'Test machine'
+     vars:
+       set_fact: 'Test machine'
 
 b/ Passed as arguments:
   
@@ -221,21 +221,28 @@ b/ Passed as arguments:
           https_enabled=True
   
   !Variable must start with letter; valid characters are: letters, numbers, underscores
+  
   # Array definition example:
-    users:
-     bjones:
-      first_name: Bob
-      last_name: Jones
-     acook:
-      first_name: Anne
-      last_name: Cook
+  
+      users:
+       bjones:
+        first_name: Bob
+        last_name: Jones
+       acook:
+        first_name: Anne
+        last_name: Cook
+  
   # Array accessing/reading example:  
-    users.bjones.first_name             # Returns 'Bob'
-    users['bjones']['first_name']       # Returns 'Bob'  <-preferable method
+  
+      users.bjones.first_name             # Returns 'Bob'
+      users['bjones']['first_name']       # Returns 'Bob'  <-preferable method
 
   # Inventory variables hierarchy/scope
+                                                                        
     !Three levels: Global, Play, Host
+                                                                        
     !If Ansible finds variables with the same name, it uses chain of preference (highest priority on the top):
+                                                                        
  ^   A) Common variable file     - overrides everything, host/group/inventory variable files
  |      01) 'extra' variables via CLI (-e)
  |      02) Task variables (only for task itself)
@@ -247,10 +254,13 @@ b/ Passed as arguments:
  |      08) Defined via 'set_facts' (- set_fact: user: joe)
  |      09) Registered variables with 'register' keyword for debugging
  |      10) Host facts discovered by Ansible (ansible_facts)
+                                                                        
  |   B) Host variables           - overrides group variable files
  |      11) 'host_vars' in host_vars directory
+                                                                        
  |   C) Group variables          - overrides inventory variable files
  |      12) 'group_vars' in group_vars directory
+                                                                        
  |   D) Inventory variable files - lowest priority
  |      13) 'host_vars' in the inventory file ([hostgroup:vars])
  |      14) 'group_vars' in the inventory file ([hostgroup:children])
@@ -323,6 +333,7 @@ b/ Passed as arguments:
    with_random_choices - Takes list; 'item' set to one list item at random
 
    Note - Conditionals:
+                                                                        
    Equal                                     "{{ max_memory }} == 512"
    Less than                                 "{{ min_memory }} < 128"
    Greater than                              "{{ min_memory }} > 256"
